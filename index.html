@@ -843,7 +843,7 @@
           <section>
             <div class="filters">
               <div class="selects">
-                <select id="tagFilter"><option>全部标签</option><option>评价等级</option><option>地下水</option><option>大气环境</option></select>
+                <select id="tagFilter"><option>全部标签</option><option>法规程序</option><option>评价等级</option><option>现状调查</option><option>预测评价</option><option>公众参与</option><option>验收</option><option>环境风险</option><option>案例分析</option><option>地下水</option><option>大气环境</option></select>
                 <select id="statusFilter"><option>全部状态</option><option>已掌握</option><option>学习中</option><option>错题</option></select>
                 <select><option>最新创建</option><option>按章节排序</option><option>错题优先</option></select>
               </div>
@@ -940,28 +940,52 @@
   </dialog>
 
   <script>
-    const storageKey = "eia-dashboard-memory-cards-v2";
+    const storageKey = "eia-dashboard-memory-cards-v3";
     const seed = {
-      activeChapterId: "ch4",
+      activeChapterId: "ch11",
       view: "card",
       chapters: [
-        { id: "ch1", title: "环境影响评价总论", count: 12, subs: [["1.1 评价目的与原则", 4], ["1.2 评价工作程序", 5], ["1.3 相关法律法规", 3]] },
-        { id: "ch2", title: "大气环境影响评价", count: 18, subs: [] },
-        { id: "ch3", title: "地表水环境影响评价", count: 22, subs: [] },
-        { id: "ch4", title: "地下水环境影响评价", count: 16, subs: [] },
-        { id: "ch5", title: "声环境影响评价", count: 10, subs: [] },
-        { id: "ch6", title: "生态环境影响评价", count: 14, subs: [] },
-        { id: "ch7", title: "土壤环境影响评价", count: 12, subs: [] },
-        { id: "ch8", title: "环境风险评价", count: 15, subs: [] },
-        { id: "ch9", title: "环境经济损益分析", count: 8, subs: [] },
-        { id: "ch10", title: "环境管理与监测计划", count: 9, subs: [] }
+        { id: "ch1", title: "环评法律法规与程序", count: 24, subs: [["1.1 环评分类管理", 6], ["1.2 审批与重新报批", 7], ["1.3 公众参与与信息公开", 6], ["1.4 验收与法律责任", 5]] },
+        { id: "ch2", title: "大气环境影响评价", count: 22, subs: [["2.1 评价等级", 6], ["2.2 现状调查", 5], ["2.3 预测与削减", 7], ["2.4 达标判定", 4]] },
+        { id: "ch3", title: "地表水环境影响评价", count: 24, subs: [["3.1 水污染影响型", 8], ["3.2 水文要素型", 5], ["3.3 预测与排污口", 6], ["3.4 监测断面", 5]] },
+        { id: "ch4", title: "地下水环境影响评价", count: 20, subs: [["4.1 等级判定", 6], ["4.2 包气带实验", 5], ["4.3 防渗分区", 5], ["4.4 跟踪监测", 4]] },
+        { id: "ch5", title: "声环境影响评价", count: 12, subs: [] },
+        { id: "ch6", title: "生态环境影响评价", count: 18, subs: [["6.1 生态敏感区", 5], ["6.2 影响识别", 5], ["6.3 保护恢复措施", 5], ["6.4 红线与物种", 3]] },
+        { id: "ch7", title: "土壤环境影响评价", count: 14, subs: [] },
+        { id: "ch8", title: "环境风险评价", count: 18, subs: [["8.1 风险源识别", 5], ["8.2 风险防范", 5], ["8.3 应急体系", 4], ["8.4 事故情景", 4]] },
+        { id: "ch9", title: "案例分析答题模板", count: 20, subs: [["9.1 产业政策与选址", 5], ["9.2 工程分析", 5], ["9.3 措施可行性", 5], ["9.4 结论完整性", 5]] },
+        { id: "ch10", title: "环境管理与监测计划", count: 12, subs: [] },
+        { id: "ch11", title: "重难点与高频考点", count: 30, subs: [["11.1 必背数字", 8], ["11.2 易混概念", 8], ["11.3 案例高频问法", 8], ["11.4 考前速记", 6]] }
       ],
       cards: [
         { id: "c1", chapterId: "ch2", title: "大气环境评价等级判定口诀", mnemonic: "十上一，一到十二，低一三。", meaning: "含义：Pmax ≥ 10% 为一级；1% ≤ Pmax < 10% 为二级；Pmax < 1% 为三级。", tags: ["大气环境", "评价等级", "Pmax"], date: "2024-05-10", status: "done", wrong: true, question: "大气环境评价等级判定主要依据什么指标？" },
         { id: "c2", chapterId: "ch3", title: "地表水评价等级口诀", mnemonic: "直排看两数，二万六十万为一；\n二百六千起为二；再小三级A；间排三级B。", meaning: "含义：直接排放的建设项目看废水排放量 Q 和污染物当量数 W。", tags: ["地表水", "评价等级", "Q与W"], date: "2024-05-08", status: "learning", wrong: true, question: "地表水污染影响型评价等级判定中，Q 和 W 的临界值是什么？" },
         { id: "c3", chapterId: "ch4", title: "地下水评价等级口诀", mnemonic: "一类最重，敏感加重；四类最轻，通常不评。", meaning: "含义：地下水评价等级由项目类别（I-IV类）和地下水敏感程度（敏感/较敏感/不敏感）共同决定。", tags: ["地下水", "评价等级", "敏感程度"], date: "2024-05-06", status: "done", wrong: true, question: "地下水环境影响评价工作等级如何确定？" },
         { id: "c4", chapterId: "ch5", title: "声环境评价要点口诀", mnemonic: "声看三区：功能区、增加量、影响人。", meaning: "含义：声环境评价主要考虑声环境功能区类别、噪声级增量、受影响人口变化情况。", tags: ["声环境", "评价要点"], date: "2024-05-05", status: "learning", wrong: false, question: "声环境评价主要看哪三个因素？" },
-        { id: "c5", chapterId: "ch4", title: "地下水实验定位口诀", mnemonic: "抽注水层，渗测包气；浸溶固废，土柱迁移。", meaning: "含义：抽水/注水求含水层参数，渗水测包气带，浸溶看固废污染物溶出，土柱淋滤模拟污染迁移。", tags: ["地下水", "实验", "包气带"], date: "2024-05-11", status: "done", wrong: false, question: "试坑法、单环法、双环法属于什么试验？" }
+        { id: "c5", chapterId: "ch4", title: "地下水实验定位口诀", mnemonic: "抽注水层，渗测包气；浸溶固废，土柱迁移。", meaning: "含义：抽水/注水求含水层参数，渗水测包气带，浸溶看固废污染物溶出，土柱淋滤模拟污染迁移。", tags: ["地下水", "实验", "包气带"], date: "2024-05-11", status: "done", wrong: false, question: "试坑法、单环法、双环法属于什么试验？" },
+        { id: "c6", chapterId: "ch1", title: "建设项目环评分类管理", mnemonic: "影响重，报告书；影响轻，报告表；很小登记表。", meaning: "重难点：不是按投资额分类，而是按环境影响程度分类。案例题常问“应编制哪类文件、谁审批、是否可豁免”。", tags: ["法规程序", "分类管理", "高频"], date: "2026-05-12", status: "done", wrong: false, question: "建设项目环评文件分类管理的核心依据是什么？" },
+        { id: "c7", chapterId: "ch1", title: "重新报批与重新审核", mnemonic: "变大变重重报批；五年不开重新审。", meaning: "重难点：项目性质、规模、地点、生产工艺或防治措施发生重大变动，通常要重新报批；环评文件批准后超过法定期限方开工，常考重新审核。", tags: ["法规程序", "审批", "高频"], date: "2026-05-12", status: "learning", wrong: true, question: "什么情况下建设项目环评文件需要重新报批或重新审核？" },
+        { id: "c8", chapterId: "ch1", title: "公众参与高频边界", mnemonic: "报告书多公众，表和登记通常少；敏感项目别漏信息公开。", meaning: "高频问法：公众参与主体、公开内容、公开时点、意见采纳说明。案例题不要只写“已公示”，要写是否充分、是否回应意见。", tags: ["公众参与", "法规程序", "案例分析"], date: "2026-05-12", status: "learning", wrong: true, question: "公众参与在案例分析中通常从哪些角度审查？" },
+        { id: "c9", chapterId: "ch1", title: "竣工环保验收", mnemonic: "先措施，后监测；能达标，才验收。", meaning: "重难点：验收关注环保设施是否建成并正常运行、污染物是否达标、环境管理和监测是否落实。案例题常问“是否具备验收条件”。", tags: ["验收", "法规程序", "高频"], date: "2026-05-12", status: "done", wrong: false, question: "建设项目竣工环保验收重点看什么？" },
+        { id: "c10", chapterId: "ch2", title: "大气现状调查与监测", mnemonic: "先看达标区，再查污染源；常规因子有数据，特征因子补监测。", meaning: "重难点：环境空气质量达标区判定、区域污染源调查、评价因子筛选、现状监测布点。别把现状调查写成只测厂界。", tags: ["大气环境", "现状调查", "高频"], date: "2026-05-12", status: "learning", wrong: false, question: "大气现状调查为什么要先判断区域达标情况？" },
+        { id: "c11", chapterId: "ch2", title: "大气预测评价高频", mnemonic: "正常排放看长期，非正常排放看短时；新增污染要叠加背景。", meaning: "高频问法：预测因子、预测情景、背景浓度叠加、达标判定、区域削减方案。案例题常问预测情景是否完整。", tags: ["大气环境", "预测评价", "案例分析"], date: "2026-05-12", status: "learning", wrong: true, question: "大气预测评价中为什么要考虑非正常排放情景？" },
+        { id: "c12", chapterId: "ch3", title: "地表水直接/间接排放", mnemonic: "直排入水体，等级看QW；间排进管网，重点看接纳可行。", meaning: "易混点：间接排放不是不用评价，而是重点转向污水处理厂接纳能力、管网条件、排放标准衔接和事故风险。", tags: ["地表水", "评价等级", "高频"], date: "2026-05-12", status: "done", wrong: false, question: "地表水间接排放项目评价重点是什么？" },
+        { id: "c13", chapterId: "ch3", title: "地表水断面布设", mnemonic: "上游控背景，下游看影响；排口混合区，敏感点加密。", meaning: "重难点：监测断面要服务影响识别，通常考虑对照断面、控制断面、削减断面和敏感目标断面。", tags: ["地表水", "现状调查", "监测"], date: "2026-05-12", status: "learning", wrong: false, question: "地表水现状监测断面布设要覆盖哪些位置？" },
+        { id: "c14", chapterId: "ch4", title: "地下水污染防控", mnemonic: "源头减量，分区防渗；跟踪监测，应急处置。", meaning: "案例高频：防渗分区是否合理、重点污染防治区是否加强、监测井布设是否覆盖上游/厂区/下游、事故泄漏是否有收集和应急。", tags: ["地下水", "措施", "案例分析"], date: "2026-05-12", status: "done", wrong: true, question: "地下水污染防治措施通常包括哪几类？" },
+        { id: "c15", chapterId: "ch6", title: "生态影响识别", mnemonic: "占地、阻隔、破碎化；物种、生境、生态流。", meaning: "重难点：生态评价不只看污染物，还看工程占地、施工扰动、栖息地破碎化、迁徙通道阻隔、水文过程改变和生态恢复。", tags: ["生态", "现状调查", "高频"], date: "2026-05-12", status: "learning", wrong: false, question: "生态影响评价为什么不能只写污染物排放？" },
+        { id: "c16", chapterId: "ch6", title: "生态保护措施顺序", mnemonic: "先避让，后减缓；再修复，最后补偿。", meaning: "案例答题模板：优先优化选址选线避让敏感区；无法避让时采取减缓措施；施工后生态恢复；仍有不可避免影响时生态补偿。", tags: ["生态", "措施", "案例分析"], date: "2026-05-12", status: "done", wrong: false, question: "生态保护措施的一般优先顺序是什么？" },
+        { id: "c17", chapterId: "ch7", title: "土壤评价高频", mnemonic: "污染影响看入土，生态影响看盐酸碱；源径汇别混。", meaning: "易混点：污染影响型关注污染物通过大气沉降、地面漫流、垂直入渗进入土壤；生态影响型关注盐化、酸化、碱化等。", tags: ["土壤", "评价等级", "高频"], date: "2026-05-12", status: "learning", wrong: false, question: "土壤污染影响型评价常见影响途径有哪些？" },
+        { id: "c18", chapterId: "ch8", title: "环境风险三件套", mnemonic: "识别风险源，预测事故后果，落实防范应急。", meaning: "重难点：风险评价不是正常排放评价，重点是危险物质、事故情景、最大可信事故、影响范围、防范措施和应急预案。", tags: ["环境风险", "案例分析", "高频"], date: "2026-05-12", status: "done", wrong: true, question: "环境风险评价和常规环境影响评价的侧重点有什么不同？" },
+        { id: "c19", chapterId: "ch8", title: "事故废水不外排", mnemonic: "能收集，能切换，能暂存，能处理。", meaning: "案例高频：围堰、事故池、雨污切换、初期雨水收集、消防废水收集、关闭阀门、事故后处理去向。", tags: ["环境风险", "措施", "高频"], date: "2026-05-12", status: "learning", wrong: true, question: "事故废水防控措施如何答得完整？" },
+        { id: "c20", chapterId: "ch9", title: "案例工程分析模板", mnemonic: "原辅料、工艺线；产排污、平衡图；节点因子别漏掉。", meaning: "案例分析最常见扣分点：只写污染物，不写产污环节；只写末端治理，不写源强核算；忽略物料平衡、水量平衡、特征污染因子。", tags: ["案例分析", "工程分析", "高频"], date: "2026-05-12", status: "done", wrong: false, question: "案例题中的工程分析应重点交代哪些内容？" },
+        { id: "c21", chapterId: "ch9", title: "案例措施可行性", mnemonic: "技术可行，达标可行；经济合理，运行可靠。", meaning: "答题模板：说明治理工艺适用对象、处理效率、达标稳定性、二次污染控制、运行管理要求和同类工程应用情况。", tags: ["案例分析", "措施", "高频"], date: "2026-05-12", status: "learning", wrong: false, question: "评价污染防治措施可行性时应从哪些角度回答？" },
+        { id: "c22", chapterId: "ch9", title: "选址合理性模板", mnemonic: "规划相符，红线不碰；敏感避让，环境可承载。", meaning: "案例高频：产业政策、规划环评及审查意见、三线一单、生态保护红线、环境质量底线、资源利用上线、敏感目标距离和环境风险可接受。", tags: ["案例分析", "法规程序", "高频"], date: "2026-05-12", status: "done", wrong: true, question: "项目选址合理性通常从哪些方面论证？" },
+        { id: "c23", chapterId: "ch10", title: "环境监测计划", mnemonic: "点位、因子、频次、标准；责任、记录、公开。", meaning: "重难点：监测计划不是一句“定期监测”，要写清污染源监测、环境质量监测、地下水/土壤跟踪监测、事故监测和信息公开。", tags: ["监测", "环境管理", "案例分析"], date: "2026-05-12", status: "learning", wrong: false, question: "一个完整的环境监测计划应包含哪些要素？" },
+        { id: "c24", chapterId: "ch11", title: "最容易混的五组概念", mnemonic: "规划环评≠项目环评；现状≠预测；正常≠事故；防渗≠防漏；验收≠审批。", meaning: "高频易混点：规划环评看布局和规模，项目环评看具体工程；现状是背景，预测是增量叠加；风险事故要单独设情景；验收发生在建成后。", tags: ["易混概念", "高频", "案例分析"], date: "2026-05-12", status: "done", wrong: false, question: "为什么验收不能替代环评审批？" },
+        { id: "c25", chapterId: "ch11", title: "高频数字速记", mnemonic: "大气1和10；地表水200、6000、2万、60万；地下水I到IV配敏感。", meaning: "这张卡只做定位：大气等级常记 Pmax 的 1% 和 10%；地表水水污染影响型常记 Q 与 W 的分档；地下水记项目类别与敏感程度矩阵。", tags: ["必背数字", "评价等级", "高频"], date: "2026-05-12", status: "done", wrong: true, question: "大气、地表水、地下水评价等级各自最核心的判定抓手是什么？" },
+        { id: "c26", chapterId: "ch11", title: "案例万能检查清单", mnemonic: "合法合规、源强清楚；现状可信、预测完整；措施可行、结论闭合。", meaning: "答案例时每道题都扫一遍：产业政策/规划/三线一单，工程分析与源强，环境质量现状，预测评价，污染防治与风险防范，监测管理和公众参与。", tags: ["案例分析", "高频", "考前速记"], date: "2026-05-12", status: "done", wrong: false, question: "案例分析答题如何避免漏项？" },
+        { id: "c27", chapterId: "ch11", title: "措施题高频答法", mnemonic: "废气收集处理，废水分质回用；固废分类去向，噪声隔声减振；地下防渗监测，风险围堵应急。", meaning: "措施题要分要素作答，且每项都要落到工程措施、管理措施、达标目标和监测验证。", tags: ["措施", "案例分析", "高频"], date: "2026-05-12", status: "learning", wrong: false, question: "污染防治措施题为什么要按环境要素分条回答？" },
+        { id: "c28", chapterId: "ch11", title: "审题关键词", mnemonic: "问合理性就论证；问可行性就证据；问完善措施就补缺口。", meaning: "很多失分来自答非所问：合理性题强调相符性和可接受性；可行性题强调技术/达标/运行；完善措施题先找原方案缺什么。", tags: ["案例分析", "考前速记", "高频"], date: "2026-05-12", status: "learning", wrong: true, question: "案例题中“合理性、可行性、完善措施”三类问法有什么区别？" }
       ]
     };
 
