@@ -670,6 +670,63 @@
       color: var(--muted);
     }
 
+    .practice-card {
+      display: grid;
+      gap: 18px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .practice-question {
+      min-height: 128px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #f8fbfd;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.55;
+    }
+
+    .practice-answer {
+      display: none;
+      padding: 18px;
+      border-radius: var(--radius);
+      border: 1px solid #bfe3df;
+      background: var(--teal-soft);
+      color: #075f59;
+      font-size: 16px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .practice-answer.show { display: block; }
+
+    .practice-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .wrong-page {
+      display: grid;
+      gap: 12px;
+    }
+
+    .wrong-card {
+      display: grid;
+      gap: 10px;
+      padding: 18px;
+      border: 1px solid #ffd0cc;
+      border-radius: var(--radius);
+      background: #fffafa;
+    }
+
+    .wrong-card h3 { margin: 0; font-size: 18px; }
+
     dialog {
       width: min(640px, calc(100vw - 28px));
       border: 0;
@@ -991,6 +1048,7 @@
 
     let state = load();
     let mode = "cards";
+    let currentQuizId = null;
 
     const $ = (sel) => document.querySelector(sel);
     const $$ = (sel) => Array.from(document.querySelectorAll(sel));
@@ -1012,9 +1070,10 @@
       const status = $("#statusFilter").value;
       return state.cards.filter((card) => {
         const text = `${card.title} ${card.mnemonic} ${card.meaning} ${card.tags.join(" ")} ${card.question}`.toLowerCase();
+        const chapterOk = card.chapterId === state.activeChapterId;
         const tagOk = tag === "全部标签" || card.tags.includes(tag);
         const statusOk = status === "全部状态" || (status === "已掌握" && card.status === "done") || (status === "学习中" && card.status === "learning") || (status === "错题" && card.wrong);
-        return (!q || text.includes(q)) && tagOk && statusOk;
+        return chapterOk && (!q || text.includes(q)) && tagOk && statusOk;
       });
     }
 
@@ -1058,6 +1117,14 @@
     }
 
     function renderCards() {
+      if (mode === "practice") {
+        renderPractice();
+        return;
+      }
+      if (mode === "wrong") {
+        renderWrongPage();
+        return;
+      }
       const cards = currentCards();
       $("#cardGrid").classList.toggle("list", state.view === "list");
       if (!cards.length) {
@@ -1076,13 +1143,92 @@
           <div class="card-foot">
             <span>📅 ${esc(card.date)}</span>
             <span class="status ${card.status === "done" ? "done" : "learning"}">${card.status === "done" ? "● 已掌握" : "● 学习中"}</span>
-            <button data-wrong="${card.id}" title="标为错题">⋯</button>
+            <button class="btn ${card.wrong ? "" : "danger"}" data-wrong="${card.id}" title="标为错题">${card.wrong ? "移出错题" : "标为错题"}</button>
           </div>
         </article>
       `).join("");
       $$("[data-wrong]").forEach((button) => button.addEventListener("click", () => {
         const card = state.cards.find((item) => item.id === button.dataset.wrong);
         card.wrong = !card.wrong;
+        save();
+        render();
+      }));
+    }
+
+    function renderPractice() {
+      const cards = currentCards();
+      $("#cardGrid").classList.remove("list");
+      if (!cards.length) {
+        $("#cardGrid").innerHTML = `<div class="empty">当前章节没有可抽背卡片。换个章节，或先添加一张卡片。</div>`;
+        return;
+      }
+      const card = cards.find((item) => item.id === currentQuizId) || cards[0];
+      currentQuizId = card.id;
+      $("#cardGrid").innerHTML = `
+        <section class="practice-card">
+          <div>
+            <span class="tag">${esc(state.chapters.find((chapter) => chapter.id === card.chapterId)?.title || "当前章节")}</span>
+            <h2 style="margin:12px 0 0">${esc(card.title)}</h2>
+          </div>
+          <div class="practice-question">${esc(card.question)}</div>
+          <div class="practice-answer" id="practiceAnswer">${esc(card.mnemonic)}\n\n${esc(card.meaning)}</div>
+          <div class="practice-actions">
+            <button class="btn primary" id="showAnswerBtn">显示答案</button>
+            <button class="btn" id="knowBtn">答对了</button>
+            <button class="btn danger" id="missBtn">答错，加入错题</button>
+            <button class="btn" id="nextBtn">下一题</button>
+          </div>
+        </section>
+      `;
+      $("#showAnswerBtn").addEventListener("click", () => $("#practiceAnswer").classList.add("show"));
+      $("#knowBtn").addEventListener("click", () => {
+        card.status = "done";
+        card.wrong = false;
+        save();
+        nextQuiz(cards);
+      });
+      $("#missBtn").addEventListener("click", () => {
+        card.status = "learning";
+        card.wrong = true;
+        save();
+        nextQuiz(cards);
+      });
+      $("#nextBtn").addEventListener("click", () => nextQuiz(cards));
+    }
+
+    function nextQuiz(cards) {
+      const pool = cards.filter((card) => card.id !== currentQuizId);
+      const nextPool = pool.length ? pool : cards;
+      currentQuizId = nextPool[Math.floor(Math.random() * nextPool.length)].id;
+      render();
+    }
+
+    function renderWrongPage() {
+      const wrongCards = currentCards().filter((card) => card.wrong);
+      $("#cardGrid").classList.add("list");
+      if (!wrongCards.length) {
+        $("#cardGrid").innerHTML = `<div class="empty">当前章节没有错题。点卡片上的“标为错题”，或在抽背里点“答错”。</div>`;
+        return;
+      }
+      $("#cardGrid").innerHTML = `<section class="wrong-page">${wrongCards.map((card) => `
+        <article class="wrong-card">
+          <h3>${esc(card.title)}</h3>
+          <div class="practice-question" style="min-height:auto;font-size:17px">${esc(card.question)}</div>
+          <div class="mnemonic">${esc(card.mnemonic)}</div>
+          <div class="meaning">${esc(card.meaning)}</div>
+          <div class="practice-actions">
+            <button class="btn primary" data-practice="${card.id}">马上抽背</button>
+            <button class="btn" data-clear-wrong="${card.id}">移出错题</button>
+          </div>
+        </article>
+      `).join("")}</section>`;
+      $$("[data-practice]").forEach((button) => button.addEventListener("click", () => {
+        currentQuizId = button.dataset.practice;
+        setMode("practice");
+      }));
+      $$("[data-clear-wrong]").forEach((button) => button.addEventListener("click", () => {
+        const card = state.cards.find((item) => item.id === button.dataset.clearWrong);
+        card.wrong = false;
         save();
         render();
       }));
@@ -1105,11 +1251,15 @@
     function openPractice() {
       $("#statusFilter").value = "全部状态";
       $("#tagFilter").value = "全部标签";
-      $(".tab.active").classList.remove("active");
-      $('[data-mode="practice"]').classList.add("active");
-      mode = "practice";
-      const cards = currentCards();
-      if (cards.length) alert(`抽背题：${cards[Math.floor(Math.random() * cards.length)].question}`);
+      setMode("practice");
+    }
+
+    function setMode(nextMode) {
+      mode = nextMode;
+      $$(".tab").forEach((item) => item.classList.toggle("active", item.dataset.mode === nextMode));
+      if (mode === "wrong") $("#statusFilter").value = "错题";
+      if (mode === "cards") $("#statusFilter").value = "全部状态";
+      render();
     }
 
     $("#searchInput").addEventListener("input", renderCards);
@@ -1122,14 +1272,7 @@
     $("#addCardBtn").addEventListener("click", () => $("#cardDialog").showModal());
     $("#practiceBtn").addEventListener("click", openPractice);
     $("#startPractice").addEventListener("click", openPractice);
-    $$(".tab").forEach((tab) => tab.addEventListener("click", () => {
-      $$(".tab").forEach((item) => item.classList.remove("active"));
-      tab.classList.add("active");
-      mode = tab.dataset.mode;
-      if (mode === "wrong") $("#statusFilter").value = "错题";
-      if (mode === "cards") $("#statusFilter").value = "全部状态";
-      renderCards();
-    }));
+    $$(".tab").forEach((tab) => tab.addEventListener("click", () => setMode(tab.dataset.mode)));
 
     $("#chapterForm").addEventListener("submit", (event) => {
       if (event.submitter.value !== "save") return;
