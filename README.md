@@ -19,8 +19,8 @@
 
 桌面端：
 
-![桌面端预览](preview-desktop.png)
+![桌面端预览](./assets/preview-desktop.png)
 
 手机端：
 
-![手机端预览](preview-mobile.png)
+![手机端预览](./assets/preview-mobile.png)
