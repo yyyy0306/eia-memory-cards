@@ -1,0 +1,1089 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>环评记忆卡</title>
+  <style>
+    :root {
+      --bg: #f6f7f4;
+      --panel: #ffffff;
+      --ink: #172026;
+      --muted: #65727d;
+      --line: #d8dfdc;
+      --teal: #176b68;
+      --teal-soft: #e6f2ef;
+      --amber: #d28b22;
+      --amber-soft: #fff4d8;
+      --coral: #c95643;
+      --coral-soft: #fae9e5;
+      --blue: #335f8d;
+      --shadow: 0 18px 40px rgba(20, 35, 38, 0.09);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 272px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      border-right: 1px solid var(--line);
+      background: #fbfcfa;
+      padding: 22px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: var(--teal);
+      color: white;
+      font-weight: 800;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.15;
+    }
+
+    .brand p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .sidebar-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 18px 0 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .chapter-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .chapter-button {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      color: var(--ink);
+      background: transparent;
+      text-align: left;
+    }
+
+    .chapter-button:hover,
+    .chapter-button.active {
+      border-color: #b8cec9;
+      background: var(--teal-soft);
+    }
+
+    .chapter-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .chapter-count {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .sidebar-actions {
+      display: grid;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .main {
+      min-width: 0;
+      padding: 22px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .title-block h2 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.2;
+    }
+
+    .title-block p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 38px;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      border-color: #aebbb7;
+      box-shadow: 0 5px 14px rgba(18, 30, 33, 0.07);
+    }
+
+    .btn.primary {
+      background: var(--teal);
+      border-color: var(--teal);
+      color: white;
+    }
+
+    .btn.warning {
+      background: var(--amber-soft);
+      border-color: #edcf91;
+      color: #80510f;
+    }
+
+    .btn.danger {
+      background: var(--coral-soft);
+      border-color: #edb8ad;
+      color: #923724;
+    }
+
+    .icon {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 15px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-header h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .panel-body {
+      padding: 16px;
+    }
+
+    .search {
+      position: relative;
+      min-width: 230px;
+    }
+
+    .search svg {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+    }
+
+    .search input {
+      width: 100%;
+      min-height: 38px;
+      padding: 8px 10px 8px 34px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfcfa;
+      outline: none;
+    }
+
+    .search input:focus,
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(23, 107, 104, 0.12);
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .memory-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .memory-card header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px 14px;
+      background: #fbfcfa;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .memory-card h4 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--amber-soft);
+      color: #7a510d;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .memory-content {
+      display: grid;
+      gap: 10px;
+      padding: 13px 14px 14px;
+    }
+
+    .mnemonic {
+      padding: 10px 11px;
+      border-left: 4px solid var(--teal);
+      background: var(--teal-soft);
+      color: #164d4a;
+      font-weight: 800;
+    }
+
+    .detail {
+      color: #2f3b43;
+      white-space: pre-wrap;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tab {
+      min-height: 44px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 800;
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab.active {
+      color: var(--teal);
+      border-bottom-color: var(--teal);
+      background: #fbfcfa;
+    }
+
+    .quiz-box {
+      display: grid;
+      gap: 13px;
+    }
+
+    .quiz-question {
+      min-height: 92px;
+      padding: 14px;
+      border-radius: var(--radius);
+      border: 1px solid #cfd9d6;
+      background: #fbfcfa;
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    .answer {
+      display: none;
+      padding: 13px;
+      border-radius: var(--radius);
+      background: var(--amber-soft);
+      border: 1px solid #efd499;
+      color: #5f4215;
+      white-space: pre-wrap;
+    }
+
+    .answer.show {
+      display: block;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .stat {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfcfa;
+    }
+
+    .stat b {
+      display: block;
+      color: var(--blue);
+      font-size: 22px;
+      line-height: 1.1;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .wrong-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .wrong-item {
+      padding: 11px;
+      border-radius: var(--radius);
+      border: 1px solid #edb8ad;
+      background: var(--coral-soft);
+    }
+
+    .wrong-item b {
+      display: block;
+      margin-bottom: 4px;
+      color: #7f2c1d;
+    }
+
+    .empty {
+      padding: 22px 14px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed #bfc9c5;
+      border-radius: var(--radius);
+      background: #fbfcfa;
+    }
+
+    dialog {
+      width: min(620px, calc(100vw - 28px));
+      border: 0;
+      border-radius: var(--radius);
+      padding: 0;
+      box-shadow: 0 26px 70px rgba(20, 35, 38, 0.28);
+    }
+
+    dialog::backdrop {
+      background: rgba(16, 24, 27, 0.44);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-head h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .modal-body {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      color: #334048;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px 11px;
+      outline: none;
+      background: #fbfcfa;
+    }
+
+    .field textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 9px;
+      padding: 0 18px 18px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 980px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .chapter-list {
+        grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .main,
+      .sidebar {
+        padding: 16px;
+      }
+
+      .topbar {
+        grid-template-columns: 1fr;
+      }
+
+      .top-actions {
+        justify-content: stretch;
+      }
+
+      .top-actions .btn,
+      .top-actions .search {
+        flex: 1 1 100%;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-header {
+        align-items: stretch;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">环</div>
+        <div>
+          <h1>环评记忆卡</h1>
+          <p>口诀、抽背、错题一处管理</p>
+        </div>
+      </div>
+
+      <div class="sidebar-title">
+        <span>章节</span>
+        <button class="btn" id="addChapterBtn" title="添加章节">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          新增
+        </button>
+      </div>
+      <div class="chapter-list" id="chapterList"></div>
+
+      <div class="sidebar-actions">
+        <button class="btn warning" id="exportBtn">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          导出数据
+        </button>
+        <label class="btn" for="importFile">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21V9"/><path d="m7 14 5-5 5 5"/><path d="M5 3h14"/></svg>
+          导入数据
+        </label>
+        <input class="hidden" id="importFile" type="file" accept="application/json">
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="topbar">
+        <div class="title-block">
+          <h2 id="chapterTitle">地下水实验</h2>
+          <p id="chapterSummary">用短口诀定位考点，再用抽背题检查能不能说出来。</p>
+        </div>
+        <div class="top-actions">
+          <div class="search">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input id="searchInput" placeholder="搜索口诀、题目、关键词">
+          </div>
+          <button class="btn primary" id="addCardBtn">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            添加卡片
+          </button>
+        </div>
+      </section>
+
+      <section class="stats" id="stats"></section>
+
+      <section class="layout">
+        <div class="panel">
+          <div class="panel-header">
+            <h3>口诀卡片</h3>
+            <span class="tag" id="cardCount">0 张</span>
+          </div>
+          <div class="panel-body">
+            <div class="card-grid" id="cardGrid"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="tabs">
+            <button class="tab active" data-tab="quiz">抽背</button>
+            <button class="tab" data-tab="wrong">错题本</button>
+            <button class="tab" data-tab="notes">速记</button>
+          </div>
+          <div class="panel-body">
+            <div id="quizPane" class="quiz-box"></div>
+            <div id="wrongPane" class="wrong-list hidden"></div>
+            <div id="notesPane" class="hidden">
+              <div class="mnemonic" id="chapterMnemonic"></div>
+              <p class="detail" id="chapterNotes"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="chapterDialog">
+    <form method="dialog" id="chapterForm">
+      <div class="modal-head">
+        <h3>添加章节</h3>
+        <button class="btn" value="cancel" type="submit">关闭</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label for="chapterName">章节名称</label>
+          <input id="chapterName" required placeholder="例如：大气评价等级">
+        </div>
+        <div class="field">
+          <label for="chapterDesc">章节说明</label>
+          <input id="chapterDesc" placeholder="这章最容易混的点">
+        </div>
+        <div class="field">
+          <label for="chapterShort">总口诀</label>
+          <textarea id="chapterShort" placeholder="例如：气占标，水排放，地下类敏"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn primary" value="save" type="submit">保存章节</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="cardDialog">
+    <form method="dialog" id="cardForm">
+      <div class="modal-head">
+        <h3>添加记忆卡</h3>
+        <button class="btn" value="cancel" type="submit">关闭</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label for="cardChapter">所属章节</label>
+          <select id="cardChapter"></select>
+        </div>
+        <div class="field">
+          <label for="cardTitle">卡片标题</label>
+          <input id="cardTitle" required placeholder="例如：渗水试验">
+        </div>
+        <div class="field">
+          <label for="cardMnemonic">口诀</label>
+          <input id="cardMnemonic" required placeholder="例如：渗水测包气，坑环单双环">
+        </div>
+        <div class="field">
+          <label for="cardDetail">考点说明</label>
+          <textarea id="cardDetail" required placeholder="写清用途、适用条件、易混点"></textarea>
+        </div>
+        <div class="field">
+          <label for="cardQuestion">抽背题</label>
+          <input id="cardQuestion" required placeholder="例如：试坑法、单环法、双环法属于什么试验？">
+        </div>
+        <div class="field">
+          <label for="cardAnswer">答案</label>
+          <textarea id="cardAnswer" required placeholder="例如：渗水试验。"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn primary" value="save" type="submit">保存卡片</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    const storageKey = "eia-memory-card-app-v1";
+
+    const seedData = {
+      activeChapterId: "groundwater",
+      chapters: [
+        {
+          id: "groundwater",
+          name: "地下水实验",
+          desc: "抽、注、渗、浸、淋五类实验快速定位。",
+          mnemonic: "抽注水层，渗测包气；浸溶固废，土柱迁移。",
+          notes: "完整口诀：抽注求含水，抽不动就注；渗水测包气，坑环单双环；浸溶泡固废，看污染入水；土柱仿下渗，吸变净防护。"
+        }
+      ],
+      cards: [
+        {
+          id: "pump",
+          chapterId: "groundwater",
+          title: "抽水试验",
+          mnemonic: "单井自己看，多孔旁边看，群井一起看。",
+          detail: "抽井水，求含水层参数，如渗透系数、影响半径。单孔抽水只用一个井；多孔抽水是一个主孔加观测孔；群井开采是多个井共同抽水。",
+          question: "测含水层渗透系数，常用什么试验？",
+          answer: "抽水试验，也可注水试验。",
+          wrong: false
+        },
+        {
+          id: "inject",
+          chapterId: "groundwater",
+          title: "注水试验",
+          mnemonic: "深水难抽就注水，注水数值偏小。",
+          detail: "往井里注水，目的与抽水试验相同。适合地下水位埋藏很深，或含水性差、不容易抽水的情况。",
+          question: "地下水埋得很深，抽水困难，用什么替代？",
+          answer: "注水试验。",
+          wrong: false
+        },
+        {
+          id: "seep",
+          chapterId: "groundwater",
+          title: "渗水试验",
+          mnemonic: "渗水测包气，坑环单双环。",
+          detail: "测包气带或非饱和带的渗透性能和防污性能。常用方法有试坑法、单环法、双环法。",
+          question: "试坑法、单环法、双环法属于什么试验？",
+          answer: "渗水试验。",
+          wrong: false
+        },
+        {
+          id: "leach",
+          chapterId: "groundwater",
+          title: "浸溶试验",
+          mnemonic: "固废泡一泡，污染往水跑。",
+          detail: "把固体废物或土壤泡进水里，看有害成分是否转移到水中，尤其关注是否经地层渗漏影响地下水。",
+          question: "把固体废物泡水，看污染物是否溶出，是什么？",
+          answer: "浸溶试验。",
+          wrong: false
+        },
+        {
+          id: "column",
+          chapterId: "groundwater",
+          title: "土柱淋滤试验",
+          mnemonic: "土柱四看：吸、变、净、防。",
+          detail: "把土做成柱子，用污水从上往下淋，模拟污染物在包气带中的迁移过程。重点看吸附、变化、自净和防护能力。",
+          question: "模拟污水穿过包气带向地下水迁移，是什么？",
+          answer: "土柱淋滤试验。",
+          wrong: false
+        }
+      ]
+    };
+
+    let state = loadState();
+    let currentQuizId = null;
+
+    const chapterList = document.querySelector("#chapterList");
+    const chapterTitle = document.querySelector("#chapterTitle");
+    const chapterSummary = document.querySelector("#chapterSummary");
+    const chapterMnemonic = document.querySelector("#chapterMnemonic");
+    const chapterNotes = document.querySelector("#chapterNotes");
+    const cardGrid = document.querySelector("#cardGrid");
+    const cardCount = document.querySelector("#cardCount");
+    const stats = document.querySelector("#stats");
+    const searchInput = document.querySelector("#searchInput");
+    const quizPane = document.querySelector("#quizPane");
+    const wrongPane = document.querySelector("#wrongPane");
+    const notesPane = document.querySelector("#notesPane");
+    const chapterDialog = document.querySelector("#chapterDialog");
+    const cardDialog = document.querySelector("#cardDialog");
+    const chapterForm = document.querySelector("#chapterForm");
+    const cardForm = document.querySelector("#cardForm");
+
+    function loadState() {
+      const saved = localStorage.getItem(storageKey);
+      if (!saved) return structuredClone(seedData);
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return structuredClone(seedData);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    }
+
+    function activeChapter() {
+      return state.chapters.find((chapter) => chapter.id === state.activeChapterId) || state.chapters[0];
+    }
+
+    function filteredCards() {
+      const term = searchInput.value.trim().toLowerCase();
+      return state.cards.filter((card) => {
+        const inChapter = card.chapterId === activeChapter().id;
+        const searchable = `${card.title} ${card.mnemonic} ${card.detail} ${card.question} ${card.answer}`.toLowerCase();
+        return inChapter && (!term || searchable.includes(term));
+      });
+    }
+
+    function render() {
+      const chapter = activeChapter();
+      chapterTitle.textContent = chapter.name;
+      chapterSummary.textContent = chapter.desc || "把这一章拆成口诀、抽背题和错题。";
+      chapterMnemonic.textContent = chapter.mnemonic || "还没有总口诀。";
+      chapterNotes.textContent = chapter.notes || "添加卡片后，这里会成为你的章节速记页。";
+
+      renderChapters();
+      renderStats();
+      renderCards();
+      renderQuiz();
+      renderWrongList();
+      fillChapterSelect();
+    }
+
+    function renderChapters() {
+      chapterList.innerHTML = state.chapters.map((chapter) => {
+        const count = state.cards.filter((card) => card.chapterId === chapter.id).length;
+        const active = chapter.id === state.activeChapterId ? " active" : "";
+        return `
+          <button class="chapter-button${active}" data-chapter="${chapter.id}">
+            <span class="chapter-name">${escapeHtml(chapter.name)}</span>
+            <span class="chapter-count">${count} 张</span>
+          </button>
+        `;
+      }).join("");
+
+      chapterList.querySelectorAll("[data-chapter]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.activeChapterId = button.dataset.chapter;
+          currentQuizId = null;
+          saveState();
+          render();
+        });
+      });
+    }
+
+    function renderStats() {
+      const cards = state.cards.filter((card) => card.chapterId === activeChapter().id);
+      const wrong = cards.filter((card) => card.wrong).length;
+      stats.innerHTML = `
+        <div class="stat"><b>${state.chapters.length}</b><span>章节</span></div>
+        <div class="stat"><b>${cards.length}</b><span>本章卡片</span></div>
+        <div class="stat"><b>${wrong}</b><span>本章错题</span></div>
+      `;
+    }
+
+    function renderCards() {
+      const cards = filteredCards();
+      cardCount.textContent = `${cards.length} 张`;
+      if (!cards.length) {
+        cardGrid.innerHTML = `<div class="empty">没有匹配的卡片，换个关键词或添加一张。</div>`;
+        return;
+      }
+
+      cardGrid.innerHTML = cards.map((card) => `
+        <article class="memory-card">
+          <header>
+            <div>
+              <h4>${escapeHtml(card.title)}</h4>
+              <span class="tag">${card.wrong ? "错题复盘" : "口诀卡"}</span>
+            </div>
+          </header>
+          <div class="memory-content">
+            <div class="mnemonic">${escapeHtml(card.mnemonic)}</div>
+            <div class="detail">${escapeHtml(card.detail)}</div>
+            <div class="card-actions">
+              <button class="btn" data-quiz="${card.id}">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11h6"/><path d="M9 15h3"/><path d="M17 3H7a2 2 0 0 0-2 2v14l4-2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/></svg>
+                抽背
+              </button>
+              <button class="btn ${card.wrong ? "warning" : "danger"}" data-wrong="${card.id}">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="m10.3 3.9-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3.1l-8-14a2 2 0 0 0-3.4 0Z"/></svg>
+                ${card.wrong ? "移出错题" : "标为错题"}
+              </button>
+            </div>
+          </div>
+        </article>
+      `).join("");
+
+      cardGrid.querySelectorAll("[data-quiz]").forEach((button) => {
+        button.addEventListener("click", () => {
+          currentQuizId = button.dataset.quiz;
+          switchTab("quiz");
+          renderQuiz();
+        });
+      });
+
+      cardGrid.querySelectorAll("[data-wrong]").forEach((button) => {
+        button.addEventListener("click", () => toggleWrong(button.dataset.wrong));
+      });
+    }
+
+    function renderQuiz() {
+      const cards = state.cards.filter((card) => card.chapterId === activeChapter().id);
+      if (!cards.length) {
+        quizPane.innerHTML = `<div class="empty">这一章还没有抽背题。</div>`;
+        return;
+      }
+      const card = cards.find((item) => item.id === currentQuizId) || cards[Math.floor(Math.random() * cards.length)];
+      currentQuizId = card.id;
+      quizPane.innerHTML = `
+        <div class="quiz-question">${escapeHtml(card.question)}</div>
+        <div class="answer" id="answerBox">${escapeHtml(card.answer)}</div>
+        <div class="card-actions">
+          <button class="btn primary" id="showAnswerBtn">看答案</button>
+          <button class="btn" id="nextQuizBtn">下一题</button>
+          <button class="btn danger" id="wrongQuizBtn">${card.wrong ? "移出错题" : "答错了"}</button>
+        </div>
+      `;
+      document.querySelector("#showAnswerBtn").addEventListener("click", () => {
+        document.querySelector("#answerBox").classList.add("show");
+      });
+      document.querySelector("#nextQuizBtn").addEventListener("click", () => {
+        const otherCards = cards.filter((item) => item.id !== currentQuizId);
+        const pool = otherCards.length ? otherCards : cards;
+        currentQuizId = pool[Math.floor(Math.random() * pool.length)].id;
+        renderQuiz();
+      });
+      document.querySelector("#wrongQuizBtn").addEventListener("click", () => toggleWrong(card.id));
+    }
+
+    function renderWrongList() {
+      const wrongCards = state.cards.filter((card) => card.chapterId === activeChapter().id && card.wrong);
+      if (!wrongCards.length) {
+        wrongPane.innerHTML = `<div class="empty">本章暂时没有错题，保持这个状态就很漂亮。</div>`;
+        return;
+      }
+      wrongPane.innerHTML = wrongCards.map((card) => `
+        <div class="wrong-item">
+          <b>${escapeHtml(card.title)}</b>
+          <div>${escapeHtml(card.question)}</div>
+          <div class="detail">${escapeHtml(card.answer)}</div>
+        </div>
+      `).join("");
+    }
+
+    function fillChapterSelect() {
+      document.querySelector("#cardChapter").innerHTML = state.chapters.map((chapter) => {
+        const selected = chapter.id === state.activeChapterId ? "selected" : "";
+        return `<option value="${chapter.id}" ${selected}>${escapeHtml(chapter.name)}</option>`;
+      }).join("");
+    }
+
+    function toggleWrong(cardId) {
+      const card = state.cards.find((item) => item.id === cardId);
+      if (!card) return;
+      card.wrong = !card.wrong;
+      saveState();
+      render();
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.classList.toggle("active", tab.dataset.tab === tabName);
+      });
+      quizPane.classList.toggle("hidden", tabName !== "quiz");
+      wrongPane.classList.toggle("hidden", tabName !== "wrong");
+      notesPane.classList.toggle("hidden", tabName !== "notes");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function makeId(prefix) {
+      return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+    }
+
+    document.querySelector("#addChapterBtn").addEventListener("click", () => chapterDialog.showModal());
+    document.querySelector("#addCardBtn").addEventListener("click", () => cardDialog.showModal());
+    searchInput.addEventListener("input", renderCards);
+
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => switchTab(tab.dataset.tab));
+    });
+
+    chapterForm.addEventListener("submit", (event) => {
+      if (event.submitter.value !== "save") return;
+      event.preventDefault();
+      const chapter = {
+        id: makeId("chapter"),
+        name: document.querySelector("#chapterName").value.trim(),
+        desc: document.querySelector("#chapterDesc").value.trim(),
+        mnemonic: document.querySelector("#chapterShort").value.trim(),
+        notes: "这里可以继续沉淀本章的高频易混点。"
+      };
+      state.chapters.push(chapter);
+      state.activeChapterId = chapter.id;
+      saveState();
+      chapterForm.reset();
+      chapterDialog.close();
+      render();
+    });
+
+    cardForm.addEventListener("submit", (event) => {
+      if (event.submitter.value !== "save") return;
+      event.preventDefault();
+      state.cards.push({
+        id: makeId("card"),
+        chapterId: document.querySelector("#cardChapter").value,
+        title: document.querySelector("#cardTitle").value.trim(),
+        mnemonic: document.querySelector("#cardMnemonic").value.trim(),
+        detail: document.querySelector("#cardDetail").value.trim(),
+        question: document.querySelector("#cardQuestion").value.trim(),
+        answer: document.querySelector("#cardAnswer").value.trim(),
+        wrong: false
+      });
+      saveState();
+      cardForm.reset();
+      cardDialog.close();
+      render();
+    });
+
+    document.querySelector("#exportBtn").addEventListener("click", () => {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "环评记忆卡数据.json";
+      anchor.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.querySelector("#importFile").addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      const imported = JSON.parse(text);
+      if (!Array.isArray(imported.chapters) || !Array.isArray(imported.cards)) {
+        alert("导入失败：文件格式不对。");
+        return;
+      }
+      state = imported;
+      saveState();
+      render();
+      event.target.value = "";
+    });
+
+    render();
+  </script>
+</body>
+</html>
